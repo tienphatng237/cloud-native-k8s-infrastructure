@@ -1,0 +1,85 @@
+############################
+# Terraform
+############################
+
+# Terraform working directories
+**/.terraform/
+
+# Terraform lock file (MUST be committed)
+!.terraform.lock.hcl
+
+# Terraform state files (NEVER commit)
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Variable files (DO NOT COMMIT)
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+
+############################
+# SSH Keys
+############################
+
+# Private / public keys (DO NOT COMMIT)
+key_pair/*
+!key_pair/.gitkeep
+
+
+############################
+# Ansible
+############################
+
+# Retry files
+*.retry
+
+# Vault password file
+.vault_password
+
+# Generated inventories (Terraform creates these)
+ansible/inventories/**/kubernetes.ini
+ansible/inventories/**/observability.ini
+ansible/inventories/**/openvpn.ini
+
+# Generic generated inventory patterns
+inventories/**/hosts.generated
+inventories/**/hosts.auto.ini
+
+
+############################
+# OS / Editor / Misc
+############################
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Vim
+*.swp
+*.swo
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Python (if any helper scripts)
+venv/
+__pycache__/
+*.pyc
