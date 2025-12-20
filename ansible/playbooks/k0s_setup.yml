@@ -1,0 +1,24 @@
+---
+# ============================
+# PLAY 1: Cài đặt packages chung
+# ============================
+- hosts: all
+  become: yes
+  roles:
+    - common
+
+# ============================
+# PLAY 2: Cài đặt k0s Controller
+# ============================
+- hosts: k0s_controller
+  become: yes
+  roles:
+    - k0s_controller
+
+# ============================
+# PLAY 3: Cài đặt k0s Worker
+# ============================
+- hosts: k0s_workers
+  become: yes
+  roles:
+    - k0s_worker
