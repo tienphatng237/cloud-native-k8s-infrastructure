@@ -69,6 +69,11 @@ As part of the staging environment setup, secure access to private
 infrastructure components is established before deploying Kubernetes
 and observability services.
 
+<details>
+<summary><strong>Click here to view full infrastructure configuration steps (OpenVPN, k0s, MetalLB)</strong></summary>
+
+<br/>
+
 ##### 1️⃣ OpenVPN Deployment (Private Subnet Access)
 
 An OpenVPN server is provisioned to provide secure administrative access
@@ -162,6 +167,57 @@ At this stage, all worker nodes should appear in the cluster and reach the
 Ready state once networking components are fully initialized. This confirms
 that the k0s cluster has been successfully deployed and is ready for
 subsequent configuration steps such as load balancing and observability.
+
+##### 3️⃣ MetalLB Deployment (LoadBalancer Support for k0s)
+
+In a self-managed Kubernetes environment such as k0s running on EC2,
+cloud-native LoadBalancer services are not available by default.
+To enable service exposure in a production-like manner, MetalLB is deployed
+as the load-balancing solution for the staging cluster.
+
+MetalLB is configured in **Layer 2 (L2) mode**, which is suitable for
+staging and on-premise–like environments and integrates well with
+private subnets in AWS.
+
+The deployment is fully automated using Ansible.
+
+**MetalLB deployment command:**
+
+```bash
+ansible-playbook \
+  -i inventories/staging/kubernetes.ini \
+  playbooks/metallb_setup.yml
+```
+
+This playbook performs the following actions:
+
+- Installs MetalLB Custom Resource Definitions (CRDs)
+- Deploys MetalLB controller and speaker components
+- Configures an IP address pool from the private subnet
+- Enables Layer 2 advertisement for IP allocation
+
+*Deployment verification*
+
+After deployment, verify that the MetalLB namespace has been created:
+
+```bash
+sudo k0s kubectl get namespaces
+```
+
+Expected namespace:
+
+``metallb-system``
+
+
+Verify that MetalLB components are running:
+
+```bash
+sudo k0s kubectl get pods -n metallb-system
+```
+
+At this stage, MetalLB is ready to assign private IP addresses to
+Kubernetes services of type LoadBalancer. Application-level services
+will be deployed and validated in later stages of the project.
 
 ---
 
