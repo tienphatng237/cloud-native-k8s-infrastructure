@@ -115,6 +115,53 @@ ssh -i key_pair/k0s_key ubuntu@10.0.1.167
 
 This VPN-based access model ensures that all Kubernetes nodes and observability components remain isolated from direct internet access while still being fully manageable for deployment and testing purposes.
 
+##### 2️⃣ k0s Kubernetes Cluster Deployment (Controller & Workers)
+
+After secure access to the private subnets has been established via OpenVPN,
+the k0s Kubernetes cluster is deployed using Ansible.
+
+The cluster is composed of:
+- One k0s controller node responsible for control plane operations
+- Multiple k0s worker nodes responsible for running application workloads
+
+The deployment process is fully automated using a dedicated Ansible playbook,
+ensuring consistency and repeatability across environments.
+
+**Cluster deployment command:**
+
+```bash
+ansible-playbook -i inventories/staging/kubernetes.ini playbooks/k0s_setup.yml
+```
+This playbook performs the following actions:
+
+- Installs k0s binaries on controller and worker nodes
+
+- Initializes the k0s control plane on the controller node
+
+- Joins worker nodes to the cluster using a secure token-based mechanism
+
+- Configures kubeconfig access for cluster administration
+
+*Cluster verification*
+
+After the deployment completes, connect to the controller node via SSH:
+```bash
+ssh -i key_pair/k0s_key ubuntu@<controller-private-ip>
+```
+
+Verify that all nodes have successfully joined the cluster by executing:
+
+```bash 
+k0s kubectl get nodes
+```
+Example output: 
+![k0s get nodes](images/k0s-get-nodes.png)
+
+At this stage, all worker nodes should appear in the cluster and reach the
+Ready state once networking components are fully initialized. This confirms
+that the k0s cluster has been successfully deployed and is ready for
+subsequent configuration steps such as load balancing and observability.
+
 ---
 
 ## Author
