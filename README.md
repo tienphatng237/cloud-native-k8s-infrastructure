@@ -155,6 +155,7 @@ Verify that all nodes have successfully joined the cluster by executing:
 k0s kubectl get nodes
 ```
 Example output: 
+
 ![k0s get nodes](images/k0s-get-nodes.png)
 
 At this stage, all worker nodes should appear in the cluster and reach the
