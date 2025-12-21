@@ -1,0 +1,12 @@
+[Unit]
+Description=Grafana Tempo Tracing Backend
+After=network.target
+
+[Service]
+User=tempo
+ExecStart=/usr/local/bin/tempo -config.file=/etc/tempo/tempo.yaml
+Restart=always
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
