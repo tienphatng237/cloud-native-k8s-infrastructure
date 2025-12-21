@@ -22,3 +22,11 @@
   roles:
     - { role: common, tags: [common, observability] }
     - { role: observability/logging/loki, tags: [observability, loki] }
+
+
+- name: Observability | Tracing node (Tempo)
+  hosts: obser-2
+  become: true
+  roles:
+    - { role: common, tags: [common, observability] }
+    - { role: observability/tracing/tempo, tags: [observability, tempo] }
