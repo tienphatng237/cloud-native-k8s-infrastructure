@@ -74,51 +74,95 @@ and observability services.
 
 <br/>
 
-##### 1️⃣ OpenVPN Deployment (Private Subnet Access)
+##### 1️⃣ OpenVPN Deployment (Secure Access to Private Subnets)
 
-An OpenVPN server is provisioned to provide secure administrative access
-to EC2 instances located in private subnets. This approach avoids direct
-public exposure of internal nodes and closely follows real-world
-production security practices.
+To securely manage EC2 instances located in private subnets, an OpenVPN
+server is deployed as a controlled administrative access gateway.
+This design eliminates the need to expose internal resources to the
+public internet and closely aligns with real-world production security
+best practices.
 
-The OpenVPN server is configured and managed using Ansible.
+The OpenVPN server is provisioned and configured using **Ansible** to
+ensure repeatability and consistency across environments.
 
-**Connectivity test:**
+---
+
+**Connectivity Test**
+
+Before deploying OpenVPN, verify SSH connectivity to the OpenVPN instance:
 
 ```bash
 ansible -i inventories/staging/openvpn.ini openvpn -m ping
 ```
 
-If the connectivity test is successful, the OpenVPN server is deployed using:
+If the connectivity test succeeds, deploy the OpenVPN server using:
 
-```
+```bash
 ansible-playbook -i inventories/staging/openvpn.ini playbooks/openvpn_setup.yml
 ```
 
-After the deployment completes, the OpenVPN client configuration file
-is automatically generated and fetched to the local management machine.
+After the playbook completes, the OpenVPN client configuration file
+(`devops.ovpn`) is automatically generated on the server and fetched to
+the local management machine.
 
-Copy the client configuration file to the OpenVPN client directory:
+---
 
-```
+**OpenVPN Client Configuration**
+
+###### 🪟 Windows Clients
+
+Copy the generated OpenVPN client configuration file to the OpenVPN
+configuration directory on Windows:
+
+```bash
 cp vpn/devops.ovpn /mnt/c/Users/<username>/OpenVPN/config/
 ```
 
-Example (Windows user):
+**Example:**
 
-```
+```bash
 cp vpn/devops.ovpn /mnt/c/Users/phat4/OpenVPN/config/
 ```
 
-Once the VPN connection is established, administrators can securely
-access EC2 instances in private subnets via SSH:
+After copying the file, open **OpenVPN Connect** and establish the VPN
+connection using the imported configuration.
 
+---
+
+###### 🐧 Linux / WSL Clients (Recommended for DevOps Automation)
+
+For Linux or WSL-based environments (used for Ansible, Terraform, and
+kubectl operations), run OpenVPN directly inside the system.
+
+Install OpenVPN if it is not already available:
+
+```bash
+sudo apt update
+sudo apt install -y openvpn
 ```
+
+Connect to the VPN using the generated configuration file:
+
+```bash
+sudo openvpn --config ~/devops.ovpn
+```
+
+Once the VPN connection is established, the system will receive routes
+to the private VPC subnets, enabling direct access to internal EC2
+instances.
+
+---
+
+**Accessing Private EC2 Instances**
+
+After connecting to the VPN, administrators can securely access EC2
+instances in private subnets via SSH:
+
+```bash
 ssh -i key_pair/k0s_key ubuntu@10.0.1.167
 ```
 
-
-This VPN-based access model ensures that all Kubernetes nodes and observability components remain isolated from direct internet access while still being fully manageable for deployment and testing purposes.
+This access method ensures that all administrative traffic flows through the VPN tunnel, maintaining strict network isolation and minimizing the attack surface of the infrastructure.
 
 ##### 2️⃣ k0s Kubernetes Cluster Deployment (Controller & Workers)
 
