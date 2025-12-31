@@ -14,7 +14,7 @@
     state: present
     reload: yes
 
-# ===== DISABLE RP FILTER ( important) =====
+# ===== DISABLE RP FILTER =====
 - name: Disable rp_filter globally
   sysctl:
     name: net.ipv4.conf.all.rp_filter
@@ -73,6 +73,21 @@
     chdir: "{{ easy_rsa_dir }}"
     creates: "{{ easy_rsa_dir }}/pki/issued/{{ openvpn_client_name }}.crt"
 
+# ===== GENERATE DH (QUAN TRỌNG NHẤT) =====
+- name: Generate Diffie-Hellman parameters
+  command: ./easyrsa gen-dh
+  args:
+    chdir: "{{ easy_rsa_dir }}"
+    creates: "{{ easy_rsa_dir }}/pki/dh.pem"
+
+- name: Copy DH file to OpenVPN server directory
+  copy:
+    src: "{{ easy_rsa_dir }}/pki/dh.pem"
+    dest: "{{ openvpn_server_dir }}/dh.pem"
+    remote_src: yes
+    mode: "0600"
+
+# ===== COPY CERTS =====
 - name: Copy certificates to OpenVPN directory
   copy:
     src: "{{ easy_rsa_dir }}/pki/{{ item.src }}"

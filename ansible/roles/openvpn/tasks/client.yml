@@ -26,10 +26,12 @@
 - name: Ensure local VPN directory exists
   delegate_to: localhost
   run_once: true
+  become: false
   file:
     path: "{{ playbook_dir }}/../vpn"
     state: directory
     mode: "0755"
+
 
 - name: Fetch devops.ovpn to local machine
   fetch:

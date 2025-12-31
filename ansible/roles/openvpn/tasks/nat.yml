@@ -5,6 +5,19 @@
     update_cache: yes
 
 # ======================================================
+# ===== ALLOW ESTABLISHED / RELATED CONNECTIONS ========
+# Required for stateful return traffic
+# ======================================================
+- name: Allow established and related traffic
+  iptables:
+    table: filter
+    chain: FORWARD
+    match: state
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+    state: present
+
+# ======================================================
 # ===== FORWARD VPN → VPC ==============================
 # Cho phép client VPN (10.8.0.0/24) đi vào VPC (10.20.0.0/16)
 # ======================================================

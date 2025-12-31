@@ -1,14 +1,26 @@
 client
 dev tun
 proto udp
+
 remote {{ openvpn_public_ip }} {{ openvpn_port }}
 resolv-retry infinite
 nobind
+
 persist-key
 persist-tun
 
+# ======================================================
+# Pull routes and options pushed from server
+# Required to receive VPC route (e.g. 10.20.0.0/16)
+# ======================================================
+pull
+
 cipher AES-256-GCM
 remote-cert-tls server
+
+auth-nocache
+explicit-exit-notify 3
+
 verb 3
 
 <ca>
