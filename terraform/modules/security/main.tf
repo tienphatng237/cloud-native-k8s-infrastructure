@@ -160,3 +160,16 @@ resource "aws_security_group" "eks_nodes" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+resource "aws_security_group_rule" "eks_api_from_vpn" {
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 443
+  to_port           = 443
+
+  cidr_blocks       = [var.vpn_cidr]
+
+  security_group_id = var.eks_cluster_security_group_id
+
+  description       = "Allow kubectl access to EKS private endpoint from VPN"
+}

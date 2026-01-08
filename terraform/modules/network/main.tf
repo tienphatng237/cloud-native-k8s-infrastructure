@@ -20,6 +20,10 @@ resource "aws_subnet" "private" {
 
   tags = {
     Name = "k0s-private-${count.index + 1}"
+
+    # === REQUIRED FOR EKS / ALB ===
+    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
@@ -31,8 +35,13 @@ resource "aws_subnet" "public" {
 
   tags = {
     Name = "k0s-public-ingress"
+
+    # === REQUIRED FOR EKS / ALB ===
+    "kubernetes.io/role/elb" = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
+
 
 resource "aws_eip" "nat" {
   domain = "vpc"

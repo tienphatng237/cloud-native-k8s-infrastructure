@@ -5,6 +5,11 @@ module "network" {
   source = "../../modules/network"
 
   # =========================
+  # EKS cluster name (for subnet tags)
+  # =========================
+  cluster_name = var.cluster_name
+
+  # =========================
   # VPC & Subnet configuration
   # =========================
   vpc_cidr        = var.vpc_cidr
@@ -15,21 +20,28 @@ module "network" {
   # =========================
   # OpenVPN integration
   # =========================
-  # Dùng để tạo route:
-  # 10.8.0.0/24 -> OpenVPN ENI
+  # Route: 10.8.0.0/24 -> OpenVPN ENI
   openvpn_eni_id  = module.openvpn.eni_id
 }
-
 
 # =========================
 # Security Groups
 # =========================
 module "security" {
-  source     = "../../modules/security"
-  vpc_id     = module.network.vpc_id
-  vpc_cidr   = var.vpc_cidr
+  source = "../../modules/security"
+
+  # VPC
+  vpc_id   = module.network.vpc_id
+  vpc_cidr = var.vpc_cidr
+
+  # Admin access
   my_ip_cidr = var.my_ip_cidr
+
+  # EKS private endpoint access from VPN
+  eks_cluster_security_group_id = module.eks.eks_cluster_security_group_id
+  vpn_cidr                      = var.vpn_cidr
 }
+
 
 # =========================
 # SSH Keypair (shared)
@@ -135,4 +147,14 @@ module "iam_karpenter" {
   oidc_issuer_url   = aws_iam_openid_connect_provider.eks.url
 }
 
+# =========================
+# AWS Load Balancer Controller (Ingress)
+# =========================
+module "eks_ingress" {
+  source = "../../modules/eks-ingress"
 
+  cluster_name             = module.eks.cluster_name
+  region                   = var.region
+  vpc_id                   = module.network.vpc_id
+  alb_controller_role_arn  = module.iam_alb.alb_controller_role_arn
+}

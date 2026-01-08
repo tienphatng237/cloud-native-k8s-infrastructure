@@ -84,3 +84,8 @@ variable "observability_instance_type" {
 variable "openvpn_instance_type" {
   type = string
 }
+
+variable "vpn_cidr" {
+  description = "CIDR of OpenVPN subnet"
+  type        = string
+}

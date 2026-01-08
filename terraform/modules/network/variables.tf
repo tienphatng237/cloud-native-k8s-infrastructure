@@ -8,3 +8,7 @@ variable "openvpn_eni_id" {
   type        = string
   default     = null
 }
+
+variable "cluster_name" {
+  type = string
+}
