@@ -263,7 +263,126 @@ At this stage, MetalLB is ready to assign private IP addresses to
 Kubernetes services of type LoadBalancer. Application-level services
 will be deployed and validated in later stages of the project.
 
+</details>
 ---
+
+## 2.2 Production Environment
+
+The **production environment** represents a highly available,
+secure, and cloud-native Kubernetes platform deployed on **Amazon EKS**.
+This environment is designed to closely reflect real-world production
+deployments, with an emphasis on scalability, resilience, and
+observability.
+
+![Production Environment Architecture](images/prod-env.png)
+
+---
+
+### Production Environment Overview
+
+The production architecture is deployed within a dedicated **AWS VPC**
+and spans **multiple Availability Zones (AZs)** to ensure high
+availability and fault tolerance.
+
+At a high level, the production environment consists of:
+
+- An Amazon EKS cluster deployed across multiple private subnets
+- Worker nodes distributed evenly across Availability Zones
+- Application workloads running as Kubernetes pods
+- A centralized observability stack for monitoring, logging, and tracing
+- Secure management access through an OpenVPN server
+- Public access to applications via an Application Load Balancer (ALB)
+- Controlled outbound internet access via a NAT Gateway
+
+This architecture follows AWS and Kubernetes best practices by isolating
+application workloads in private subnets while exposing only
+well-defined entry points to the public internet.
+
+---
+
+### Production Architecture Characteristics
+
+#### Multi-AZ and High Availability Design
+
+- The VPC is segmented into **multiple Availability Zones**
+- Each AZ contains one or more **private subnets**
+- EKS worker nodes are deployed across all AZs
+- Kubernetes schedules application pods across nodes and AZs to:
+  - Improve fault tolerance
+  - Reduce the impact of node or AZ-level failures
+
+---
+
+#### Amazon EKS Cluster
+
+- The Kubernetes control plane is managed by **Amazon EKS**
+- Worker nodes run in private subnets without public IP addresses
+- Node groups are configured to support scalable and resilient workloads
+- Kubernetes-native mechanisms handle pod scheduling and recovery
+
+---
+
+#### Application Traffic Flow
+
+- External clients access applications through an
+  **Application Load Balancer (ALB)**
+- The ALB routes traffic to Kubernetes services running inside the EKS
+  cluster
+- Only required application endpoints are exposed publicly
+- Internal cluster communication remains fully private
+
+---
+
+#### Observability Stack
+
+- A dedicated observability layer is deployed outside the application
+  workloads
+- Core components include:
+  - **Prometheus** for metrics collection
+  - **Grafana** for visualization and dashboards
+  - **Loki** for log aggregation
+  - **Tempo** for distributed tracing
+- This separation ensures:
+  - Reduced blast radius
+  - Independent scaling of observability components
+  - Improved system stability during high load or failure scenarios
+
+---
+
+#### Secure Management Access
+
+- An **OpenVPN server** is deployed in a public subnet
+- DevOps / SRE engineers connect to the VPC via VPN for:
+  - Cluster administration
+  - Node-level troubleshooting
+  - Infrastructure management
+- No direct SSH access is exposed to the public internet
+
+---
+
+#### Outbound Connectivity
+
+- Private subnets do not have direct internet access
+- A **NAT Gateway** provides controlled outbound connectivity for:
+  - Package updates
+  - Container image pulls
+  - External API access (if required)
+
+---
+
+### Infrastructure Configuration (To Be Defined)
+
+The detailed configuration and deployment steps for the production
+environment will be documented in a later phase of this project.
+
+This section will include, but is not limited to:
+
+- Terraform modules for production-grade VPC and EKS provisioning
+- Node group configuration and scaling strategies
+- Observability deployment and integration with EKS
+- Security hardening and IAM configuration
+- Production access workflows and operational procedures
+
 
 ## Author
 
