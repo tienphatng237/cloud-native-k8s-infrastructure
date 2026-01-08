@@ -1,0 +1,6 @@
+[submodule "ansible-hub"]
+	path = ansible-hub
+	url = https://github.com/NT533-Q12-Distributed-Computing/ansible-hub.git
+[submodule "terraform-hub"]
+	path = terraform-hub
+	url = https://github.com/NT533-Q12-Distributed-Computing/terraform-hub.git

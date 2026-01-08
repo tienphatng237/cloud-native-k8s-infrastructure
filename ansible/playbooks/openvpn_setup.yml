@@ -1,4 +1,0 @@
-- hosts: openvpn
-  become: true
-  roles:
-    - openvpn

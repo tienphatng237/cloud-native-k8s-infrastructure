@@ -1,2 +1,0 @@
-# Default Grafana provisioning directory
-grafana_provisioning_dir: /etc/grafana/provisioning/datasources

@@ -1,4 +1,0 @@
-- hosts: k0s_controller
-  become: yes
-  roles:
-    - metallb

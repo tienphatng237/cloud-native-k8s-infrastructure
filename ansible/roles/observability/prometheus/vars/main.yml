@@ -1,5 +1,0 @@
-# Prometheus version
-prometheus_version: "2.49.1"
-
-# Prometheus listen port
-prometheus_port: 9090
