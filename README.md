@@ -212,7 +212,91 @@ Ready state once networking components are fully initialized. This confirms
 that the k0s cluster has been successfully deployed and is ready for
 subsequent configuration steps such as load balancing and observability.
 
-##### 3️⃣ MetalLB Deployment (LoadBalancer Support for k0s)
+##### 3️⃣ Argo CD Deployment (GitOps)
+
+Argo CD is deployed to enable **GitOps-based application delivery** for the staging k0s Kubernetes cluster.
+
+Argo CD is installed as a **platform component** using Ansible and runs inside the Kubernetes cluster.
+
+---
+
+**Install Argo CD**
+
+Argo CD is deployed on the k0s controller using the following playbook:
+
+```
+ansible-playbook \
+  -i inventories/staging/kubernetes.ini \
+  playbooks/argocd_setup.yml
+```
+
+This playbook:
+- Creates the `argocd` namespace
+- Installs Argo CD core components
+- Waits until the Argo CD server is ready
+
+---
+
+**Verify Argo CD Components**
+
+Verify that all Argo CD pods are running:
+
+```
+sudo k0s kubectl get pods -n argocd
+```
+
+Expected components:
+- argocd-server
+- argocd-repo-server
+- argocd-application-controller
+- argocd-dex-server
+- argocd-redis
+- argocd-notifications-controller
+
+---
+
+**Access Argo CD Dashboard**
+
+For the staging environment, the Argo CD UI is accessed via SSH port forwarding.
+
+Establish SSH port forwarding to the k0s controller:
+
+```
+ssh -i key_pair/k0s_key \
+  -L 8080:localhost:8080 \
+  ubuntu@<controller-private-ip>
+```
+
+On the controller node, forward the Argo CD service port:
+
+```
+sudo k0s kubectl port-forward \
+  svc/argocd-server -n argocd 8080:443
+```
+
+Access the dashboard from the local machine:
+
+```
+https://localhost:8080
+```
+
+---
+
+**Login**
+
+Retrieve the initial admin password:
+
+```
+sudo k0s kubectl get secret argocd-initial-admin-secret \
+  -n argocd \
+  -o jsonpath="{.data.password}" | base64 -d
+```
+
+Login credentials:
+- Username: `admin`
+- Password: (output of the command above)
+
+<!-- ##### 3️⃣ MetalLB Deployment (LoadBalancer Support for k0s)
 
 In a self-managed Kubernetes environment such as k0s running on EC2,
 cloud-native LoadBalancer services are not available by default.
@@ -261,7 +345,7 @@ sudo k0s kubectl get pods -n metallb-system
 
 At this stage, MetalLB is ready to assign private IP addresses to
 Kubernetes services of type LoadBalancer. Application-level services
-will be deployed and validated in later stages of the project.
+will be deployed and validated in later stages of the project. -->
 
 </details>
 ---
