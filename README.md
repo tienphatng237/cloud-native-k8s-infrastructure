@@ -1,36 +1,56 @@
 # Cloud-Native Infrastructure for Kubernetes
 
-This repository contains the **Infrastructure as Code (IaC)** implementation
-for deploying a **k0s Kubernetes cluster on AWS**, focusing on a
-**staging environment** designed according to cloud-native and DevOps best practices.
+This repository contains the **Infrastructure as Code (IaC)** implementation for deploying a **k0s Kubernetes cluster on AWS**, focusing on a **staging environment** designed according to cloud-native and DevOps best practices.
 
-The infrastructure provisioning is handled using **Terraform**, while
-**Ansible** is used for system configuration and observability deployment.
+The infrastructure provisioning is handled using **Terraform**, while **Ansible** is used for system configuration and observability deployment.
 
 ---
 
 ## 1. Overview
 
-The objective of this project is to design and deploy a **cloud-native infrastructure** capable of running a k0s-based Kubernetes cluster in a manner
-that closely resembles real-world production environments.
+The objective of this project is to design and deploy a **cloud-native infrastructure** capable of running a k0s-based Kubernetes cluster in a manner that closely resembles real-world production environments.
 
-Key design principles include:
-
-- Modular and reusable infrastructure design
-- Clear separation between infrastructure provisioning and configuration management
-- Secure and Kubernetes-ready network architecture
-- Automated generation of Ansible inventories from Terraform outputs
-- Observability-first approach for monitoring and logging
 
 ## 2. Infrastructure Deployment and Configuration
 
-The infrastructure is deployed using Terraform with a **module-based architecture**.
-Each module is responsible for a specific layer of the infrastructure, including
-networking, security, and compute resources.
+The infrastructure is deployed using Terraform with a **module-based architecture**. Each module is responsible for a specific layer of the infrastructure, including networking, security, and compute resources.
 
-Terraform is also responsible for generating dynamic Ansible inventory files,
-which enables seamless integration between infrastructure provisioning and
-system configuration.
+Terraform is also responsible for generating dynamic Ansible inventory files, which enables seamless integration between infrastructure provisioning and system configuration.
+
+### Usage
+
+Clone the repository along with its submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/tienphatng237/cloud-native-k8s-infrastructure.git
+```
+
+Navigate to the Terraform Hub and select the target environment:
+
+```bash
+cd cloud-native-k8s-infrastructure/terraform-hub/environments/<environment>
+```
+
+Initialize and validate the Terraform configuration:
+
+```bash
+terraform init
+terraform validate
+```
+
+Review the execution plan:
+
+```bash
+terraform plan
+```
+
+Provision the infrastructure:
+
+```bash
+terraform apply
+```
+
+After the apply step completes, Terraform outputs will expose infrastructure metadata that can be consumed by Ansible for subsequent configuration and Kubernetes bootstrapping steps.
 
 ---
 
